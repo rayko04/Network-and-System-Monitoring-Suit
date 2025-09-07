@@ -7,6 +7,18 @@ rotate_logs() {
 	find "$LOGS_DIR" -name "*.log.gz" -mtime +30 -exec rm {} \;
 }
 
+insert_db() {
+
+    HOST=$(hostname)
+    CPU=$(echo "$OUTPUT" | jq '.cpu')
+    MEM=$(echo "$OUTPUT" | jq '.mem')
+    DISK=$(echo "$OUTPUT" | jq '.disk')
+
+    mariadb -D monitor_db -e \
+        "INSERT INTO metrics (hostname, timestamp, cpu_usage, mem_usage, disk_usage) \
+        VALUES ('$HOST', NOW(), $CPU, $MEM, $DISK);"
+}
+
 compile_and_run() {
 
     TIMESTAMP=$(date +%F_%T)
@@ -18,8 +30,10 @@ compile_and_run() {
 
     echo "[$TIMESTAMP]" >> "$LOG_FILE"
 
-    "$EXEC_FILE" >> "$LOG_FILE" 2>&1
-
+    OUTPUT=$("$EXEC_FILE" 2>> "$LOG_FILE") #2>> redirects stderr to log file, $() redirects stdout to OUTPUT
+    echo "$OUTPUT" >> "$LOG_FILE"
+    
+    insert_db
 }
 
 main() {
@@ -29,8 +43,8 @@ main() {
     mkdir -p "$LOGS_DIR"
 
     LOG_FILE="$LOGS_DIR/$(date +%F).log"
-    EXEC_FILE="$DIR/execute"
-    FILE="$DIR/daemon.cpp"
+    EXEC_FILE="$DIR/src/execute"
+    FILE="$DIR/src/daemon.cpp"
 
     compile_and_run
     rotate_logs
