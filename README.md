@@ -1,5 +1,6 @@
 # Network and System Monitor Tool
-    Monitors System resource usage, scripted to run on reglar intervals and integrated with mariadb to fetch information using SQL.
+
+Monitors System resource usage, scripted to run on reglar intervals and  integrated with mariadb to fetch information using SQL.
 
 
 ## Overview
