@@ -9,6 +9,6 @@ Monitors System resource usage, scripted to run on reglar intervals and  integra
         C++ program reading system information from Linux system files.
 [Script](./scripts/script.sh)
         Bash script that compiles and run Daemon, logs the output, maintains log rotation and insert the data into database.
-[Schema](./sq/schema.sql)
+[Schema](./sql/schema.sql)
         Prototype used to create the database.
 
